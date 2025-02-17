@@ -33,3 +33,4 @@ import {
       </IonPage>
     );
   };
+  export default Feed;
