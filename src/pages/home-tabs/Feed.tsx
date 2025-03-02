@@ -19,16 +19,16 @@ const Feed: React.FC = () => {
   const posts = [
       {
           id: 1,
-          username: "Lester_the_gangster",
-          userAvatar: "C:\Users\Jethro Balaga\Documents\it35-lab\public\images\lester.jpg",
+          username: "Marites_cctv",
+          userAvatar: "https://i.pravatar.cc/150?img=5",
           title: "Kaya ko ni ba haha",
           videoUrl: "https://www.youtube.com/embed/pVciO8dazq4",
           description: "Top 10 layouts from the 2022 AUDL season."
       },
       {
           id: 2,
-          username: "bruce_lee",
-          userAvatar: "C:\Users\Jethro Balaga\Documents\it35-lab\images\Winston lee.jpg",
+          username: "BOGART",
+          userAvatar: "https://i.pravatar.cc/150?img=10",
           title: "Kini muy sumbagay!!!",
           videoUrl: "https://www.youtube.com/embed/AExV-_oQVuc",
           description: "Street Beefs."
@@ -36,7 +36,7 @@ const Feed: React.FC = () => {
       {
           id: 3,
           username: "papi_Chupapi",
-          userAvatar: "C:\Users\Jethro Balaga\Documents\it35-lab\images\chulo.jpg",
+          userAvatar: "https://i.pravatar.cc/150?img=15",
           title: "greatest flop haha",
           videoUrl: "https://www.youtube.com/embed/q8vpW41GkjQ",
           description: "Ball si Life."
@@ -82,7 +82,10 @@ const Feed: React.FC = () => {
         </div>
       </IonContent>
     </IonPage>
+    
   );
+  
 };
+
 
 export default Feed;
