@@ -1,18 +1,10 @@
 import { 
-  IonButton,
-    IonButtons,
-      IonContent, 
-      IonHeader, 
       IonIcon, 
       IonLabel, 
-      IonMenuButton, 
-      IonPage, 
       IonRouterOutlet, 
       IonTabBar, 
       IonTabButton, 
       IonTabs, 
-      IonTitle, 
-      IonToolbar 
   } from '@ionic/react';
 
   import { IonReactRouter } from '@ionic/react-router';
