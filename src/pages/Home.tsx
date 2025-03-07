@@ -1,18 +1,10 @@
 import { 
-  IonButton,
-    IonButtons,
-      IonContent, 
-      IonHeader, 
       IonIcon, 
       IonLabel, 
-      IonMenuButton, 
-      IonPage, 
       IonRouterOutlet, 
       IonTabBar, 
       IonTabButton, 
       IonTabs, 
-      IonTitle, 
-      IonToolbar 
   } from '@ionic/react';
 
   import { IonReactRouter } from '@ionic/react-router';
@@ -44,7 +36,7 @@ import {
         </IonTabBar>
       <IonRouterOutlet>
         <Route exact path="/it35-lab/app/home/feed" render={Feed} />
-        <Route exact path="/it35-lab/app/home/search" render={Search} />
+        <Route exact path="/it35-lab/app/home/search" component={Search} />
         <Route exact path="/it35-lab/app/home/favorites" render={Favorites} />
         <Route exact path="/it35-lab/app/home">
           <Redirect to="/it35-lab/app/home/feed" />
