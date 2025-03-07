@@ -9,6 +9,7 @@ import {
   IonSearchbar 
 } from '@ionic/react';
 import { useState } from 'react';
+import SearchComponent from '../../components/SearchComponent';
 
 const Search: React.FC = () => {
   const [searchText, setSearchText] = useState('');
@@ -24,21 +25,7 @@ const Search: React.FC = () => {
               </IonToolbar>
           </IonHeader>
           <IonContent fullscreen>
-              <IonSearchbar 
-                  value={searchText} 
-                  onIonInput={(e) => setSearchText(e.detail.value!)} 
-                  placeholder="Search here..."
-              ></IonSearchbar>
-              <div
-                  style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      height: '100%',
-                  }}
-              >
-                  Search
-              </div>
+           <SearchComponent/>
           </IonContent>
       </IonPage>
   );
