@@ -8,7 +8,9 @@ import {
   IonPage, 
   IonTitle, 
   IonToolbar, 
-  useIonRouter
+  useIonRouter,
+  IonAlert,
+  IonLoading  
 } from '@ionic/react';
 import { useState } from 'react';
 
@@ -16,13 +18,28 @@ const Login: React.FC = () => {
   const navigation = useIonRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showAlert, setShowAlert] = useState(false);  
+  const [showLoading, setShowLoading] = useState(false);  
 
   const doLogin = () => {
-      console.log("Username:", username);
-      console.log("Password:", password);
+    console.log("Username:", username);
+    console.log("Password:", password);
+    
+    
+    setShowLoading(true);
+    
+    setTimeout(() => {
+     
+      setShowLoading(false);
+
+     
+      setShowAlert(true);
+
+      
       navigation.push('/it35-lab/app', 'forward', 'replace');
+    }, 3000); 
   }
-  
+
   return (
     <IonPage>
       <IonHeader>
@@ -53,6 +70,22 @@ const Login: React.FC = () => {
         <IonButton onClick={doLogin} expand="full">
           Login
         </IonButton>
+
+       
+        <IonLoading
+          isOpen={showLoading}
+          message="Logging in..."
+          duration={0}  
+        />
+
+       
+        <IonAlert
+          isOpen={showAlert}
+          onDidDismiss={() => setShowAlert(false)}
+          header="Login Successful"
+          message="You have successfully logged in!"
+          buttons={['OK']}
+        />
       </IonContent>
     </IonPage>
   );
