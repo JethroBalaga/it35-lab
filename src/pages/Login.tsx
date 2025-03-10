@@ -25,20 +25,18 @@ const Login: React.FC = () => {
     console.log("Username:", username);
     console.log("Password:", password);
     
-    
     setShowLoading(true);
     
     setTimeout(() => {
-     
       setShowLoading(false);
-
-     
       setShowAlert(true);
-
-      
       navigation.push('/it35-lab/app', 'forward', 'replace');
     }, 3000); 
-  }
+  };
+
+  const navigateToRegister = () => {
+    navigation.push('/register'); // Navigate to the Register page
+  };
 
   return (
     <IonPage>
@@ -47,12 +45,12 @@ const Login: React.FC = () => {
           <IonTitle>Login</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent className='ion-padding'>
+      <IonContent className="ion-padding">
         <IonItem>
           <IonLabel position="stacked">Username</IonLabel>
           <IonInput 
             value={username} 
-            onIonChange={e => setUsername(e.detail.value!)}
+            onIonChange={(e) => setUsername(e.detail.value!)} 
             placeholder="Enter username" 
           />
         </IonItem>
@@ -62,7 +60,7 @@ const Login: React.FC = () => {
           <IonInput 
             type="password"
             value={password} 
-            onIonChange={e => setPassword(e.detail.value!)}
+            onIonChange={(e) => setPassword(e.detail.value!)} 
             placeholder="Enter password" 
           />
         </IonItem>
@@ -71,14 +69,19 @@ const Login: React.FC = () => {
           Login
         </IonButton>
 
-       
+        {/* Button to navigate to Register page */}
+        <IonButton onClick={navigateToRegister} expand="full" color="secondary">
+          Don't have an account? Sign Up
+        </IonButton>
+
+        {/* Loading spinner while logging in */}
         <IonLoading
           isOpen={showLoading}
           message="Logging in..."
-          duration={0}  
+          duration={0}  // Keep loading spinner visible until manually hidden
         />
 
-       
+        {/* Alert on successful login */}
         <IonAlert
           isOpen={showAlert}
           onDidDismiss={() => setShowAlert(false)}
