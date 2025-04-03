@@ -38,12 +38,12 @@ const Register: React.FC = () => {
 
     // After successful registration, navigate to the login page (or home page)
     setTimeout(() => {
-      navigation.push("/login", "forward", "replace"); // Navigate to login page
+      navigation.push("/it35-lab", "forward", "replace"); // Navigate to login page
     }, 2000); // 2-second delay to show the toast
   };
 
   const navigateToLogin = () => {
-    navigation.push("/login"); // Navigate back to Login page
+    navigation.push("/it35-lab"); // Navigate back to Login page
   };
 
   return (
