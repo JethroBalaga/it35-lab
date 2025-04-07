@@ -1,8 +1,6 @@
 import { 
-    IonButtons,
       IonContent, 
       IonHeader, 
-      IonMenuButton, 
       IonPage, 
       IonTitle, 
       IonToolbar 
@@ -11,10 +9,7 @@ import {
     return (
       <IonPage>
         <IonHeader>
-          <IonToolbar>
-            <IonButtons slot='start'>
-              <IonMenuButton></IonMenuButton>
-            </IonButtons>
+          <IonToolbar>          
             <IonTitle>Feed</IonTitle>
           </IonToolbar>
         </IonHeader>

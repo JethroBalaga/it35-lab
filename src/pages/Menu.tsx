@@ -8,36 +8,35 @@ import {
       IonMenu, 
       IonMenuButton, 
       IonMenuToggle, 
-      IonPage,
+      IonPage, 
       IonRouterOutlet, 
-      IonSplitPane,
       IonTitle, 
       IonToolbar 
- 
-    } from '@ionic/react'
-    import {homeOutline, logOutOutline, rocketOutline} from 'ionicons/icons'; 
-  import { Redirect, Route } from 'react-router';
-  import Home from './Home';
-  import About from './About';
-  
+  } from '@ionic/react'
+  import {homeOutline, informationOutline, logOutOutline, personCircleOutline, rocketOutline} from 'ionicons/icons';
+import { Redirect, Route } from 'react-router';
+import Home from './Home';
+import About from './About';
+import Details from './Details';
+import EditProfile from './EditProfile';
   const Menu: React.FC = () => {
     const path = [
-      {name:'Home', url: '/it35-lab/app/home', icon: homeOutline},
-      {name:'About', url: '/it35-lab/app/about', icon: rocketOutline},
-  ]
+        {name:'Home', url: '/it35-lab/app/home', icon: homeOutline},
+        {name:'About', url: '/it35-lab/app/about', icon: rocketOutline},
+        {name:'Details', url: '/it35-lab/app/details', icon: informationOutline},
+        {name:'Profile', url: '/it35-lab/app/editProfile', icon: personCircleOutline}
+    ]
+
     return (
-      <IonPage>
-            <IonSplitPane contentId="main">
-                <IonMenu contentId="main">
-                    <IonHeader>
-                        <IonToolbar>
-                            <IonTitle>
-                                Menu
-                            </IonTitle>
-                        </IonToolbar>
-                    </IonHeader>
-                    <IonContent>
-                        {path.map((item,index) =>(
+        <>
+      <IonMenu contentId="main-content">
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Menu Content</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent className="ion-padding">
+        {path.map((item,index) =>(
                             <IonMenuToggle key={index}>
                                 <IonItem routerLink={item.url} routerDirection="forward">
                                     <IonIcon icon={item.icon} slot="start"></IonIcon>
@@ -45,25 +44,36 @@ import {
                                 </IonItem>
                             </IonMenuToggle>
                         ))}
-
-                         <IonButton routerLink="/it35-lab" routerDirection="back" expand="full">
+        <IonButton routerLink="/it35-lab" routerDirection="back" expand="full">
                             <IonIcon icon={logOutOutline} slot="start"> </IonIcon>
                         Logout
                         </IonButton>
-                    </IonContent>
-                </IonMenu>
-                
-                <IonRouterOutlet id="main">
-                    <Route exact path="/it35-lab/app/home" component={Home} />
+        </IonContent>
+      </IonMenu>
+      <IonPage id="main-content">
+        <IonHeader>
+          <IonToolbar>
+            <IonButtons slot="start">
+              <IonMenuButton></IonMenuButton>
+            </IonButtons>
+            <IonTitle>Menu</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent className="ion-padding">
+        <IonRouterOutlet id="main">
+        <Route exact path="/it35-lab/app/home" component={Home} />
+                    <Route exact path="/it35-lab/app/details" component={Details} />
                     <Route exact path="/it35-lab/app/about" component={About} />
+                    <Route exact path="/it35-lab/app/editProfile" component={EditProfile} />
+
                     <Route exact path="/it35-lab/app">
-                        <Redirect to="/it35-lab/app/home"/>
+                        <Redirect to="/it35-lab/app/editProfile"></Redirect>
                     </Route>
                 </IonRouterOutlet>
-            </IonSplitPane>
-        </IonPage>
+        </IonContent>
+      </IonPage>
+    </>
     );
   };
-
-   
+  
   export default Menu;
