@@ -67,7 +67,7 @@ import EditProfile from './EditProfile';
                     <Route exact path="/it35-lab/app/editProfile" component={EditProfile} />
 
                     <Route exact path="/it35-lab/app">
-                        <Redirect to="/it35-lab/app/editProfile"></Redirect>
+                        <Redirect to="/it35-lab/app/home"/>
                     </Route>
                 </IonRouterOutlet>
         </IonContent>
