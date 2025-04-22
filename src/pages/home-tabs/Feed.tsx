@@ -23,7 +23,7 @@ import {
             height: '100%',
           }}
         >
-          Feeds
+   
         </div>
         <FeedContainer />
         </IonContent>
