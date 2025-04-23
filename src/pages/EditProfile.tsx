@@ -6,6 +6,7 @@ import {
 } from '@ionic/react';
 import { supabase } from '../utils/supabaseClient';
 import { useHistory } from 'react-router-dom';
+import EnableEmailOtp from '../components/EnableEmailOtp';
 
 const EditProfile: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -318,6 +319,7 @@ const EditProfile: React.FC = () => {
             message={alertMessage}
             buttons={['OK']}
           />
+          <EnableEmailOtp/>
         </IonContent>
       </IonPage>
     );
