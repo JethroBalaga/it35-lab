@@ -6,6 +6,7 @@ import { pencil, camera, happyOutline } from 'ionicons/icons';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
 import background from '../images/DL_Tease_16x9_v1.jpg';
+import { heart } from 'ionicons/icons';
 
 interface Post {
   post_id: string;
@@ -16,6 +17,8 @@ interface Post {
   post_created_at: string;
   post_updated_at: string;
   post_image_url?: string;
+  likes?: number;             
+  likedByCurrentUser?: boolean; 
 }
 
 const FeedContainer = () => {
@@ -38,6 +41,21 @@ const FeedContainer = () => {
   const [showEditEmojiPicker, setShowEditEmojiPicker] = useState(false);
 
   
+  const toggleLike = (post_id: string) => {
+    setPosts(prevPosts =>
+      prevPosts.map(post => {
+        if (post.post_id === post_id) {
+          const isLiked = post.likedByCurrentUser || false;
+          return {
+            ...post,
+            likes: isLiked ? (post.likes || 0) - 1 : (post.likes || 0) + 1,
+            likedByCurrentUser: !isLiked,
+          };
+        }
+        return post;
+      })
+    );
+  };
   
 
   useEffect(() => {
@@ -381,7 +399,17 @@ const FeedContainer = () => {
                   borderRadius: '12px',
                 }}>
                   <IonCardHeader>
-                    <IonRow>
+                    <IonRow className="ion-justify-content-start ion-padding-start">
+                    <IonCol size="auto">
+    <IonButton
+      fill="clear"
+      onClick={() => toggleLike(post.post_id)} // ✅ Make sure this is inside IonButton, not IonRow
+      color={post.likedByCurrentUser ? 'danger' : 'medium'}
+    >
+      <IonIcon icon={heart} slot="start" />
+      <IonText>{post.likes || 0}</IonText>
+    </IonButton>
+  </IonCol>
                       <IonCol size="1.85">
                         <IonAvatar>
                           <img alt={post.username} src={post.avatar_url} />
