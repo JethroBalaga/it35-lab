@@ -72,14 +72,14 @@ const OtpPage: React.FC = () => {
   const handleVerification = async () => {
     try {
       // Verify the code with Supabase or your backend
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('user_otp_settings')
         .select('*')
         .eq('otp_code', verificationCode)
         .single();
 
-      if (error || !data) {
-        throw error || new Error('Invalid verification code');
+      if (error) {
+        throw error;
       }
 
       // If verification is successful
@@ -90,15 +90,8 @@ const OtpPage: React.FC = () => {
       // If verification fails, go back to it35-lab
       setTimeout(() => {
         history.push('/it35-lab');
-      }, 1500);
+      }, 2000);
     }
-  };
-
-  const handleCancelVerification = () => {
-    setVerificationCode(''); // Clear the input
-    setVerificationError(''); // Clear any errors
-    setShowVerificationModal(false);
-    history.push('/it35-lab');
   };
 
   return (
@@ -150,10 +143,7 @@ const OtpPage: React.FC = () => {
         </div>
 
         {/* Verification Modal */}
-        <IonModal 
-          isOpen={showVerificationModal}
-          onDidDismiss={handleCancelVerification}
-        >
+        <IonModal isOpen={showVerificationModal}>
           <IonContent className="ion-padding">
             <IonCard>
               <IonCardHeader>
@@ -185,7 +175,7 @@ const OtpPage: React.FC = () => {
                 <IonButton 
                   expand="block" 
                   fill="clear" 
-                  onClick={handleCancelVerification}
+                  onClick={() => setShowVerificationModal(false)}
                 >
                   Cancel
                 </IonButton>
