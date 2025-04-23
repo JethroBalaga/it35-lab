@@ -14,11 +14,13 @@ import {
   IonModal,
   IonItem,
   IonInput,
-  IonLabel
+  IonLabel,
+  useIonRouter
 } from '@ionic/react';
 import { clipboardOutline } from 'ionicons/icons';
 
 const OtpPage: React.FC = () => {
+  const navigation = useIonRouter();
   const history = useHistory();
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
@@ -82,7 +84,7 @@ const OtpPage: React.FC = () => {
 
       // If verification is successful
       setShowVerificationModal(false);
-      // You might want to navigate somewhere or show success
+      navigation.push('/it35-lab/app', 'forward', 'replace');
     } catch (err) {
       setVerificationError('Invalid verification code');
       // If verification fails, go back to it35-lab
