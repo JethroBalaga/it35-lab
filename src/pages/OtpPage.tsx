@@ -95,6 +95,8 @@ const OtpPage: React.FC = () => {
   };
 
   const handleCancelVerification = () => {
+    setVerificationCode(''); // Clear the input
+    setVerificationError(''); // Clear any errors
     setShowVerificationModal(false);
     history.push('/it35-lab');
   };
@@ -150,7 +152,7 @@ const OtpPage: React.FC = () => {
         {/* Verification Modal */}
         <IonModal 
           isOpen={showVerificationModal}
-          onDidDismiss={handleCancelVerification} // Added handler for modal dismissal
+          onDidDismiss={handleCancelVerification}
         >
           <IonContent className="ion-padding">
             <IonCard>
