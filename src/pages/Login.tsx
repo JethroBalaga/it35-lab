@@ -16,18 +16,6 @@ import { logoIonic } from 'ionicons/icons';
 import { useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
 
-const AlertBox: React.FC<{ message: string; isOpen: boolean; onClose: () => void }> = ({ message, isOpen, onClose }) => {
-  return (
-    <IonAlert
-      isOpen={isOpen}
-      onDidDismiss={onClose}
-      header="Notification"
-      message={message}
-      buttons={['OK']}
-    />
-  );
-};
-
 const Login: React.FC = () => {
   const navigation = useIonRouter();
   const [email, setEmail] = useState('');
@@ -38,144 +26,112 @@ const Login: React.FC = () => {
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [otpEmailSent, setOtpEmailSent] = useState('');
 
   const doLogin = async () => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setIsLoading(true);
+    try {
+      const { error, data: { user: authUser } } = await supabase.auth.signInWithPassword({ email, password });
+      
+      if (error) throw error;
+      if (!authUser) throw new Error("User not found");
   
-    if (error) {
-      setAlertMessage(error.message);
-      setShowAlert(true);
-      return;
-    }
+      // Get the full user object to ensure we have email
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw userError || new Error("User data unavailable");
   
-    // Get logged-in user data (user id is required for the table)
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user?.email || !user?.id) {
-      setAlertMessage("Error fetching user data.");
-      setShowAlert(true);
-      return;
-    }
+      const userEmail = user.email || email; // Fallback to the email from input
   
-    // Fetch OTP status for the user
-    const { data: otpSettings, error: otpError } = await supabase
-      .from('user_otp_settings')
-      .select('otp_status, otp_code')
-      .eq('email', user.email)
-      .single();
-  
-    if (otpError) {
-      setAlertMessage("Error fetching OTP status.");
-      setShowAlert(true);
-      return;
-    }
-  
-    if (otpSettings && otpSettings.otp_status) {
-      // OTP is enabled, generate and send OTP
-      const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-  
-      // Upsert (insert or update) OTP record with user.id, email, and generated otp_code
-      const { error: upsertError } = await supabase
+      // Check OTP status
+      const { data: otpSettings, error: otpError } = await supabase
         .from('user_otp_settings')
-        .upsert({
-          id: user.id,  // Use the user id here
-          email: user.email,
-          otp_code: generatedOtp,
-          otp_status: true  // Ensure OTP is enabled
-        });
+        .select('otp_status')
+        .eq('id', user.id)
+        .single();
   
-      if (upsertError) {
-        setAlertMessage("Error storing OTP.");
-        setShowAlert(true);
+      if (otpError || !otpSettings) {
+        // No OTP required - direct login
+        setShowToast(true);
+        navigation.push('/it35-lab/app', 'forward', 'replace');
         return;
       }
   
-      // TODO: Send OTP via email (integrate email service here)
-      
+      if (otpSettings.otp_status) {
+        // Generate and "send" OTP
+        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
   
-      // Open OTP modal
-      setOtpModalOpen(true);
-    } else {
-      // OTP is disabled, proceed to the main page
-      setShowToast(true);
-      setTimeout(() => {
+        const { error: otpUpdateError } = await supabase
+          .from('user_otp_settings')
+          .upsert({
+            id: user.id,
+            email: userEmail,
+            otp_code: generatedOtp,
+            otp_expires_at: expiresAt,
+            updated_at: new Date().toISOString()
+          });
+  
+        if (otpUpdateError) throw otpUpdateError;
+  
+        setOtpEmailSent(userEmail); // Now using the properly obtained email
+        setOtpModalOpen(true);
+      } else {
+        // OTP not enabled - direct login
+        setShowToast(true);
         navigation.push('/it35-lab/app', 'forward', 'replace');
-      }, 300);
+      }
+    } catch (error: any) {
+      setAlertMessage(error.message || "Login failed");
+      setShowAlert(true);
+    } finally {
+      setIsLoading(false);
     }
   };
-  
+
   const verifyOtp = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    setIsLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Session expired");
 
-    if (!user || !user.email || otpCode.length !== 6) {
-      setAlertMessage("Please enter a valid OTP code.");
-      setShowAlert(true);
-      return;
-    }
+      const { data: otpData, error: otpError } = await supabase
+        .from('user_otp_settings')
+        .select('otp_code, otp_expires_at')
+        .eq('id', user.id)
+        .single();
 
-    // Fetch the stored OTP for the user
-    const { data: otpSettings, error } = await supabase
-      .from('user_otp_settings')
-      .select('otp_code')
-      .eq('email', user.email)
-      .single();
+      if (otpError || !otpData?.otp_code) throw new Error("Invalid OTP");
 
-    if (error || !otpSettings) {
-      setAlertMessage("Error verifying OTP.");
-      setShowAlert(true);
-      return;
-    }
+      // Check if OTP matches and is not expired
+      if (otpData.otp_code !== otpCode) throw new Error("Incorrect OTP");
+      if (new Date(otpData.otp_expires_at) < new Date()) throw new Error("OTP expired");
 
-    if (otpSettings.otp_code === otpCode) {
-      // OTP is correct, redirect to the main page and remove OTP code
+      // Clear OTP after successful verification
       await supabase
         .from('user_otp_settings')
-        .update({ otp_code: null })
-        .eq('email', user.email);
+        .update({ otp_code: null, otp_expires_at: null })
+        .eq('id', user.id);
 
-      setOtpModalOpen(false);
       setShowToast(true);
-      setTimeout(() => {
-        navigation.push('/it35-lab/app', 'forward', 'replace');
-      }, 300);
-    } else {
-      // OTP is incorrect
-      setAlertMessage("Invalid OTP code. Please try again.");
+      setOtpModalOpen(false);
+      navigation.push('/it35-lab/app', 'forward', 'replace');
+    } catch (error: any) {
+      setAlertMessage(error.message || "OTP verification failed");
       setShowAlert(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <IonPage>
       <IonContent className='ion-padding'>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginTop: '25%'
-        }}>
-          <IonAvatar
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '150px',
-              height: '150px',
-              borderRadius: '50%',
-              overflow: 'hidden'
-            }}
-          >
-            <IonIcon
-              icon={logoIonic}
-              color='primary'
-              style={{ fontSize: '120px', color: '#6c757d' }}
-            />
+        <div className="ion-text-center ion-margin-top">
+          <IonAvatar style={{ width: '150px', height: '150px', margin: '0 auto' }}>
+            <IonIcon icon={logoIonic} style={{ fontSize: '120px', color: '#6c757d' }} />
           </IonAvatar>
-          <h1 style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>USER LOGIN</h1>
+          <h1>USER LOGIN</h1>
+          
           <IonInput
             label="Email"
             labelPlacement="floating"
@@ -184,60 +140,102 @@ const Login: React.FC = () => {
             placeholder="Enter Email"
             value={email}
             onIonChange={e => setEmail(e.detail.value!)}
+            className="ion-margin-bottom"
           />
-          <IonInput style={{ marginTop: '10px' }}
+          
+          <IonInput
+            label="Password"
+            labelPlacement="floating"
             fill="outline"
             type="password"
             placeholder="Password"
             value={password}
             onIonChange={e => setPassword(e.detail.value!)}
+            className="ion-margin-bottom"
           >
-            <IonInputPasswordToggle slot="end"></IonInputPasswordToggle>
+            <IonInputPasswordToggle slot="end" />
           </IonInput>
+
+          <IonButton 
+            onClick={doLogin} 
+            expand="block" 
+            shape="round"
+            className="ion-margin-bottom"
+          >
+            Login
+          </IonButton>
+
+          <IonButton 
+            routerLink="/register" 
+            expand="block" 
+            fill="clear" 
+            shape="round"
+          >
+            Don't have an account? Register here
+          </IonButton>
         </div>
-        <IonButton onClick={doLogin} expand="full" shape='round'>
-          Login
-        </IonButton>
 
-        <IonButton routerLink="/register" expand="full" fill="clear" shape='round'>
-          Don't have an account? Register here
-        </IonButton>
+        {/* OTP Modal */}
+        <IonModal isOpen={otpModalOpen} onDidDismiss={() => setOtpModalOpen(false)}>
+          <IonContent className="ion-padding">
+            <div className="ion-text-center">
+              <h2>OTP Verification</h2>
+              <p>Visit the OTP page to retrieve your code</p>
+              
+              <IonButton 
+                routerLink="/otp" 
+                expand="block" 
+                className="ion-margin-bottom"
+              >
+                Go to OTP Page
+              </IonButton>
+              
+              <p>Or enter OTP manually:</p>
+              
+              <IonInput
+                value={otpCode}
+                placeholder="Enter 6-digit OTP"
+                onIonChange={e => setOtpCode(e.detail.value!)}
+                className="ion-margin-bottom"
+                style={{ textAlign: 'center', fontSize: '1.2rem' }}
+              />
+              
+              <IonButton 
+                onClick={verifyOtp} 
+                expand="block" 
+                className="ion-margin-bottom"
+              >
+                Verify OTP
+              </IonButton>
+              
+              <IonButton 
+                onClick={() => setOtpModalOpen(false)} 
+                expand="block" 
+                fill="clear"
+              >
+                Cancel
+              </IonButton>
+            </div>
+          </IonContent>
+        </IonModal>
 
-        {/* Reusable AlertBox Component */}
-        <AlertBox message={alertMessage} isOpen={showAlert} onClose={() => setShowAlert(false)} />
+        <IonAlert
+          isOpen={showAlert}
+          onDidDismiss={() => setShowAlert(false)}
+          header="Error"
+          message={alertMessage}
+          buttons={['OK']}
+        />
 
-        {/* IonToast for success message */}
         <IonToast
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
           message="Login successful! Redirecting..."
           duration={1500}
-          position="top"
-          color="primary"
+          color="success"
         />
 
-        {/* OTP Modal */}
-        <IonModal isOpen={otpModalOpen}>
-          <IonContent className="ion-padding">
-            <h2>Enter OTP</h2>
-            <IonInput
-              type="number"
-              placeholder="Enter OTP Code"
-              value={otpCode}
-              onIonChange={e => setOtpCode(e.detail.value!)}
-              maxlength={6}
-            />
-            <IonButton onClick={verifyOtp} expand="full" shape="round">
-              Verify OTP
-            </IonButton>
-            <IonButton onClick={() => setOtpModalOpen(false)} expand="full" fill="clear" shape="round">
-              Cancel
-            </IonButton>
-          </IonContent>
-        </IonModal>
-
-        {/* Loading spinner */}
-        <IonLoading isOpen={isLoading} message="Please wait..." />
+        <IonLoading isOpen={isLoading} message="Processing..." />
       </IonContent>
     </IonPage>
   );
