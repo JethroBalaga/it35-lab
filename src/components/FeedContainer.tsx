@@ -5,7 +5,7 @@ import { supabase } from '../utils/supabaseClient';
 import { pencil, camera, happyOutline } from 'ionicons/icons';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
-
+import background from '../images/DL_Tease_16x9_v1.jpg';
 
 interface Post {
   post_id: string;
@@ -38,31 +38,7 @@ const FeedContainer = () => {
   const [showEditEmojiPicker, setShowEditEmojiPicker] = useState(false);
 
   
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.innerHTML = `
-      @keyframes borderBlink {
-        0%, 100% {
-          border-color: #2B99E2;
-          box-shadow: 0 0 15px #2B99E2, 0 0 15px #2BAEE2, 0 0 15px#2B99E2;
-        }
-        50% {
-          border-color: #2B99E2;
-          box-shadow: 0 0 5px #2B99E2, 0 0 5px #2B99E2, 0 0 5px #2B99E2;
-        }
-      }
-
-      @keyframes fadeIn {
-      0% {
-        opacity: 0; /* Start with the card being invisible */
-      }
-      100% {
-          opacity: 1; /* Fade in to fully visible */
-       }
-      }
-    `;
-    document.head.appendChild(style);
-  }, []);
+  
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -290,12 +266,27 @@ const FeedContainer = () => {
           </IonToolbar>
         </IonHeader>
         <IonContent>
+
+        <img
+              src={background}
+              alt="background"
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover', 
+                zIndex: -1, 
+              }}
+            />
+
           {user ? (
             <>
               <IonCard style={{
                 background: 'secondary',
                 margin: '4%',
-                border: '2px solid #3880ff',
+                border: '2px solid #df0808',
                 borderRadius: '12px',
               }}>
                 <IonCardHeader>
@@ -310,7 +301,7 @@ const FeedContainer = () => {
                     placeholder="Write a post..."
                     style={{
                       border: '1px solid #ccc', borderRadius: '8px', padding: '10px', marginBottom: '10px',
-                      color: 'skyblue',
+                      color: 'light',
                     }}
                   />
 
@@ -379,14 +370,14 @@ const FeedContainer = () => {
                 </IonCardContent>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0.5rem' }}>
-                  <IonButton onClick={createPost} color="secondary">Post</IonButton>
+                  <IonButton onClick={createPost} color="danger">Post</IonButton>
                 </div>
               </IonCard>
 
               {posts.map(post => (
                 <IonCard key={post.post_id} style={{
                   background: 'secondary',
-                  border: '2px solid #3880ff',
+                  border: '2px solid #df0808',
                   borderRadius: '12px',
                 }}>
                   <IonCardHeader>
@@ -406,7 +397,7 @@ const FeedContainer = () => {
                           fill="clear"
                           onClick={(e) => setPopoverState({ open: true, event: e.nativeEvent, postId: post.post_id })}
                         >
-                          <IonIcon color="secondary" icon={pencil} />
+                          <IonIcon color="danger" icon={pencil} />
                         </IonButton>
                       </IonCol>
                     </IonRow>

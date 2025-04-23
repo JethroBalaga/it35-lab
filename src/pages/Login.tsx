@@ -11,7 +11,7 @@ import {
   useIonRouter
 } from '@ionic/react';
 import { logoIonic } from 'ionicons/icons';
-import { useState } from 'react';
+import { useState,useEffect} from 'react';
 import { supabase } from '../utils/supabaseClient';
 import logos from '../images/Valorant2.png';
 import background from '../images/DL_Tease_16x9_v1.jpg';
@@ -29,9 +29,9 @@ const AlertBox: React.FC<{ message: string; isOpen: boolean; onClose: () => void
 
 const h1Style = {
   color: 'Black',
-   '--ion-color-primary': 'red'
+   '--ion-color-primary': 'red',
+   '--custom-hover-input': 'red',
 };
-
 
 const Login: React.FC = () => {
   const navigation = useIonRouter();
@@ -40,7 +40,7 @@ const Login: React.FC = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [showToast, setShowToast] = useState(false);
-
+  
   const doLogin = async () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
@@ -112,6 +112,7 @@ const Login: React.FC = () => {
             color:'red'
           }}>USER LOGIN</h1>
           <IonInput
+            className="custom-hover-input"
             label="Email"
             labelPlacement="floating"
             fill="outline"
@@ -121,7 +122,7 @@ const Login: React.FC = () => {
             onIonChange={e => setEmail(e.detail.value!)}
             style={h1Style}
           />
-          <IonInput style={{marginTop: '10px',color:'dark', '--ion-color-primary': 'red'}}
+          <IonInput style={{marginTop: '10px',color:'black', '--ion-color-primary': 'red'}}
             fill="outline"
             type="password"
             placeholder="Password"
@@ -149,7 +150,7 @@ const Login: React.FC = () => {
           message="Login successful! Redirecting..."
           duration={1500}
           position="top"
-          color="primary"
+          color="danger"
         />
       </IonContent>
     </IonPage>
