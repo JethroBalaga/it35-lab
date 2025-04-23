@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
 import { 
   IonPage, 
@@ -9,16 +10,24 @@ import {
   IonCardContent, 
   IonButton,
   IonAlert,
-  IonIcon
+  IonIcon,
+  IonModal,
+  IonItem,
+  IonInput,
+  IonLabel
 } from '@ionic/react';
 import { clipboardOutline } from 'ionicons/icons';
 
 const OtpPage: React.FC = () => {
+  const history = useHistory();
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [expiresAt, setExpiresAt] = useState('');
   const [showCopiedAlert, setShowCopiedAlert] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationError, setVerificationError] = useState('');
 
   useEffect(() => {
     const fetchOtp = async () => {
@@ -56,6 +65,31 @@ const OtpPage: React.FC = () => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(otp);
     setShowCopiedAlert(true);
+  };
+
+  const handleVerification = async () => {
+    try {
+      // Verify the code with Supabase or your backend
+      const { error } = await supabase
+        .from('user_otp_settings')
+        .select('*')
+        .eq('otp_code', verificationCode)
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      // If verification is successful
+      setShowVerificationModal(false);
+      // You might want to navigate somewhere or show success
+    } catch (err) {
+      setVerificationError('Invalid verification code');
+      // If verification fails, go back to it35-lab
+      setTimeout(() => {
+        history.push('/it35-lab');
+      }, 2000);
+    }
   };
 
   return (
@@ -97,14 +131,56 @@ const OtpPage: React.FC = () => {
           </IonCard>
 
           <IonButton 
-            routerLink="/it35-lab" 
+            onClick={() => setShowVerificationModal(true)}
             expand="block" 
             fill="clear"
             className="ion-margin-top"
           >
-            Back to Login
+            Back to Verification
           </IonButton>
         </div>
+
+        {/* Verification Modal */}
+        <IonModal isOpen={showVerificationModal}>
+          <IonContent className="ion-padding">
+            <IonCard>
+              <IonCardHeader>
+                <IonCardTitle>Enter Verification Code</IonCardTitle>
+              </IonCardHeader>
+              <IonCardContent>
+                <IonItem>
+                  <IonLabel position="stacked">6-digit Code</IonLabel>
+                  <IonInput
+                    type="number"
+                    value={verificationCode}
+                    onIonChange={(e) => setVerificationCode(e.detail.value!)}
+                    maxlength={6}
+                  />
+                </IonItem>
+                
+                {verificationError && (
+                  <p style={{ color: 'red' }}>{verificationError}</p>
+                )}
+
+                <IonButton 
+                  expand="block" 
+                  onClick={handleVerification}
+                  className="ion-margin-top"
+                >
+                  Verify
+                </IonButton>
+
+                <IonButton 
+                  expand="block" 
+                  fill="clear" 
+                  onClick={() => setShowVerificationModal(false)}
+                >
+                  Cancel
+                </IonButton>
+              </IonCardContent>
+            </IonCard>
+          </IonContent>
+        </IonModal>
 
         <IonAlert
           isOpen={showCopiedAlert}
