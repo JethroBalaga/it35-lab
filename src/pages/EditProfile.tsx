@@ -174,7 +174,7 @@ const EditProfile: React.FC = () => {
         </IonHeader>
         <IonContent className="ion-padding">
           <IonItem>
-            <IonText color="secondary">
+            <IonText color="danger">
               <h1>Edit Account</h1>
             </IonText>
           </IonItem>
@@ -198,7 +198,7 @@ const EditProfile: React.FC = () => {
                   onChange={handleAvatarChange}
                 />
   
-                <IonButton expand="block" onClick={() => fileInputRef.current?.click()}>
+                <IonButton expand="block" onClick={() => fileInputRef.current?.click()} color='danger'>
                   Upload Avatar
                 </IonButton>
               </IonCol>
@@ -247,7 +247,7 @@ const EditProfile: React.FC = () => {
           </IonGrid>         
           <IonGrid>
             <IonRow>
-            <IonText color="secondary">
+            <IonText color="danger">
             <h3>Change Password</h3>
             </IonText>
               <IonCol size="12">
@@ -288,7 +288,7 @@ const EditProfile: React.FC = () => {
           {/* Current Password Field */}
           <IonGrid>
             <IonRow>
-              <IonText color="secondary">
+              <IonText color="danger">
               <h3>Confirm Changes</h3>
               </IonText>
               <IonCol size="12">
@@ -307,7 +307,7 @@ const EditProfile: React.FC = () => {
             </IonRow>
           </IonGrid>
   
-          <IonButton expand="full" onClick={handleUpdate} shape="round">
+          <IonButton expand="full" onClick={handleUpdate} shape="round" color='danger'>
             Update Account
           </IonButton>
   

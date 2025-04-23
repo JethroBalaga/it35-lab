@@ -31,7 +31,7 @@ const Details: React.FC = () => {
       </IonCardHeader>
 
       <IonCardContent>
-      <IonButton>click for details</IonButton>
+      <IonButton color='danger'>click for details</IonButton>
       </IonCardContent>
     </IonCard>
       </IonContent>
