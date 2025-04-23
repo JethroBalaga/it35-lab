@@ -293,8 +293,10 @@ const FeedContainer = () => {
           {user ? (
             <>
               <IonCard style={{
-                background: 'transparent',
-                margin: '4%'
+                background: 'secondary',
+                margin: '4%',
+                border: '2px solid #3880ff',
+                borderRadius: '12px',
               }}>
                 <IonCardHeader>
                   <IonCardTitle >Create Post</IonCardTitle>
@@ -383,10 +385,9 @@ const FeedContainer = () => {
 
               {posts.map(post => (
                 <IonCard key={post.post_id} style={{
-                  background: 'transparent',
-                  border: '2px solid #2B99E2',
-                  boxShadow: '0 0 15px #2B99E2, 0 0 15px #2B99E2, 0 0 15px #2B99E2',
-                  animation: 'borderBlink 2s infinite, fadeIn 1.5s ease-in forwards',
+                  background: 'secondary',
+                  border: '2px solid #3880ff',
+                  borderRadius: '12px',
                 }}>
                   <IonCardHeader>
                     <IonRow>
