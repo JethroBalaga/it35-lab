@@ -32,35 +32,35 @@ const Login: React.FC = () => {
     setIsLoading(true);
     try {
       const { error, data: { user: authUser } } = await supabase.auth.signInWithPassword({ email, password });
-      
+
       if (error) throw error;
       if (!authUser) throw new Error("User not found");
-  
+
       // Get the full user object to ensure we have email
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) throw userError || new Error("User data unavailable");
-  
+
       const userEmail = user.email || email; // Fallback to the email from input
-  
+
       // Check OTP status
       const { data: otpSettings, error: otpError } = await supabase
         .from('user_otp_settings')
         .select('otp_status')
         .eq('id', user.id)
         .single();
-  
+
       if (otpError || !otpSettings) {
         // No OTP required - direct login
         setShowToast(true);
         navigation.push('/it35-lab/app', 'forward', 'replace');
         return;
       }
-  
+
       if (otpSettings.otp_status) {
         // Generate and "send" OTP
         const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
         const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
-  
+
         const { error: otpUpdateError } = await supabase
           .from('user_otp_settings')
           .upsert({
@@ -70,9 +70,9 @@ const Login: React.FC = () => {
             otp_expires_at: expiresAt,
             updated_at: new Date().toISOString()
           });
-  
+
         if (otpUpdateError) throw otpUpdateError;
-  
+
         setOtpEmailSent(userEmail); // Now using the properly obtained email
         setOtpModalOpen(true);
       } else {
@@ -131,7 +131,7 @@ const Login: React.FC = () => {
             <IonIcon icon={logoIonic} style={{ fontSize: '120px', color: '#6c757d' }} />
           </IonAvatar>
           <h1>USER LOGIN</h1>
-          
+
           <IonInput
             label="Email"
             labelPlacement="floating"
@@ -142,7 +142,7 @@ const Login: React.FC = () => {
             onIonChange={e => setEmail(e.detail.value!)}
             className="ion-margin-bottom"
           />
-          
+
           <IonInput
             label="Password"
             labelPlacement="floating"
@@ -156,19 +156,19 @@ const Login: React.FC = () => {
             <IonInputPasswordToggle slot="end" />
           </IonInput>
 
-          <IonButton 
-            onClick={doLogin} 
-            expand="block" 
+          <IonButton
+            onClick={doLogin}
+            expand="block"
             shape="round"
             className="ion-margin-bottom"
           >
             Login
           </IonButton>
 
-          <IonButton 
-            routerLink="/register" 
-            expand="block" 
-            fill="clear" 
+          <IonButton
+            routerLink="/register"
+            expand="block"
+            fill="clear"
             shape="round"
           >
             Don't have an account? Register here
@@ -180,37 +180,31 @@ const Login: React.FC = () => {
           <IonContent className="ion-padding">
             <div className="ion-text-center">
               <h2>OTP Verification</h2>
-              <p>Visit the OTP page to retrieve your code</p>
-              
-              <IonButton 
-                routerLink="/otp" 
-                expand="block" 
+
+              {/* This will close modal AND keep routerLink navigation */}
+              <IonButton
+                routerLink="/otp"
+                onClick={() => setOtpModalOpen(false)}
+                expand="block"
                 className="ion-margin-bottom"
               >
                 Go to OTP Page
               </IonButton>
-              
-              <p>Or enter OTP manually:</p>
-              
+
+              {/* Manual OTP Entry */}
               <IonInput
                 value={otpCode}
                 placeholder="Enter 6-digit OTP"
                 onIonChange={e => setOtpCode(e.detail.value!)}
-                className="ion-margin-bottom"
-                style={{ textAlign: 'center', fontSize: '1.2rem' }}
               />
-              
-              <IonButton 
-                onClick={verifyOtp} 
-                expand="block" 
-                className="ion-margin-bottom"
-              >
+
+              <IonButton onClick={verifyOtp} expand="block">
                 Verify OTP
               </IonButton>
-              
-              <IonButton 
-                onClick={() => setOtpModalOpen(false)} 
-                expand="block" 
+
+              <IonButton
+                onClick={() => setOtpModalOpen(false)}
+                expand="block"
                 fill="clear"
               >
                 Cancel
@@ -218,7 +212,6 @@ const Login: React.FC = () => {
             </div>
           </IonContent>
         </IonModal>
-
         <IonAlert
           isOpen={showAlert}
           onDidDismiss={() => setShowAlert(false)}
