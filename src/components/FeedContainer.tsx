@@ -294,7 +294,11 @@ const FeedContainer = () => {
             <>
               <IonCard style={{
                 background: 'transparent',
-                margin: '4%'
+                margin: '4%',
+                  border: '2px solid #2B99E2',
+                  boxShadow: '0 0 15px #2B99E2, 0 0 15px #2B99E2, 0 0 15px #2B99E2',
+                  animation: 'borderBlink 2s infinite, fadeIn 1.5s ease-in forwards'
+                
               }}>
                 <IonCardHeader>
                   <IonCardTitle >Create Post</IonCardTitle>
