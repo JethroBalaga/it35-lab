@@ -44,11 +44,7 @@ const Register: React.FC = () => {
     const [showAlert, setShowAlert] = useState(false);
 
     const handleOpenVerificationModal = () => {
-        if (!email.endsWith("@nbsc.edu.ph")) {
-            setAlertMessage("Only @nbsc.edu.ph emails are allowed to register.");
-            setShowAlert(true);
-            return;
-        }
+       
 
         if (password !== confirmPassword) {
             setAlertMessage("Passwords do not match.");
