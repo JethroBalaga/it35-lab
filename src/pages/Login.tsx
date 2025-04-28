@@ -169,6 +169,7 @@ const Login: React.FC = () => {
           <h1>USER LOGIN</h1>
 
           <IonInput
+            style={{ textAlign: 'left' }}
             label="Email"
             labelPlacement="floating"
             fill="outline"
@@ -177,20 +178,22 @@ const Login: React.FC = () => {
             value={email}
             onIonChange={e => setEmail(e.detail.value!)}
             className="ion-margin-bottom"
-          />
+            />
 
-          <IonInput
-            label="Password"
-            labelPlacement="floating"
-            fill="outline"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onIonChange={e => setPassword(e.detail.value!)}
-            className="ion-margin-bottom"
-          >
+
+           <IonInput
+             style={{ textAlign: 'left' }}
+             label="Password"
+             labelPlacement="floating"
+             fill="outline"
+             type="password"
+             placeholder="Password"
+             value={password}
+             onIonChange={e => setPassword(e.detail.value!)}
+             className="ion-margin-bottom"
+                 >
             <IonInputPasswordToggle slot="end" />
-          </IonInput>
+            </IonInput>
 
           <IonButton
             onClick={doLogin}
