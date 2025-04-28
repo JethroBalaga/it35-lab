@@ -15,6 +15,8 @@ import {
 import { logoIonic } from 'ionicons/icons';
 import { useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
+import logos from '../images/skull-3471134_1280.webp';
+import background from '../images/vcs.gif';
 
 const Login: React.FC = () => {
   const navigation = useIonRouter();
@@ -126,10 +128,44 @@ const Login: React.FC = () => {
   return (
     <IonPage>
       <IonContent className='ion-padding'>
-        <div className="ion-text-center ion-margin-top">
-          <IonAvatar style={{ width: '150px', height: '150px', margin: '0 auto' }}>
-            <IonIcon icon={logoIonic} style={{ fontSize: '120px', color: '#6c757d' }} />
-          </IonAvatar>
+
+      <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginTop: '10%'
+        }}>
+          </div>
+      <img
+              src={background}
+              alt="background"
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover', 
+                zIndex: -1, 
+              }}
+            />
+
+        <div className="ion-text-center ion-margin-top" >
+          
+        <img
+                  src={logos}
+                  alt="Logo"
+                  style={{
+                    width: '200px',
+                    height: '200px',
+                    objectFit: 'contain',
+                    margin: '0 auto',
+                    display: 'block',
+                    marginBottom: '1rem',
+                  }}
+                />
+
           <h1>USER LOGIN</h1>
 
           <IonInput
