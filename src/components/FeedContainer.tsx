@@ -276,7 +276,14 @@ const FeedContainer = () => {
   }
 };
   return (
-    
+    <IonApp>
+      <IonPage>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Posts</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent>
 
         <img
               src={background}
@@ -298,8 +305,9 @@ const FeedContainer = () => {
                 background: 'secondary',
                 margin: '4%',
                 border: '2px solid #df0808',
-                borderRadius: '12px',
+                borderRadius: '12px'
               }}>
+
                 <IonCardHeader>
                   <IonCardTitle >Create Post</IonCardTitle>
                 </IonCardHeader>
