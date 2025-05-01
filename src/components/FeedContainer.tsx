@@ -276,14 +276,7 @@ const FeedContainer = () => {
   }
 };
   return (
-    <IonApp>
-      <IonPage>
-        <IonHeader>
-          <IonToolbar>
-            <IonTitle>Posts</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <IonContent>
+    
 
         <img
               src={background}
