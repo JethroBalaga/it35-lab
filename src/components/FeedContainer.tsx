@@ -279,7 +279,7 @@ const FeedContainer = () => {
       <IonPage>
         <IonHeader>
           <IonToolbar>
-            <IonTitle>Feed</IonTitle>
+            <IonTitle color="danger">Feed</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent>
