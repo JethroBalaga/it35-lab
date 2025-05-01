@@ -449,38 +449,24 @@ const FeedContainer = () => {
 
                   {/* Popover with Edit and Delete options */}
                   <IonPopover
-  isOpen={popoverState.open && popoverState.postId === post.post_id}
-  event={popoverState.event as any} // Cast needed for TS to accept currentTarget
-  onDidDismiss={() => setPopoverState({ open: false, event: null, postId: null })}
->
-  <IonContent>
-    <IonButton
-      expand="block"
-      onClick={() => {
-        const targetPost = posts.find(p => p.post_id === popoverState.postId);
-        if (targetPost) startEditingPost(targetPost);
-        setPopoverState({ open: false, event: null, postId: null });
-      }}
-    >
-      Edit
-    </IonButton>
-    <IonButton
-      color="danger"
-      expand="block"
-      onClick={() => {
-        const targetPost = posts.find(p => p.post_id === popoverState.postId);
-        if (targetPost) {
-          const imagePath = getImagePath(targetPost.post_image_url || '');
-          deletePost(targetPost.post_id, imagePath);
-        }
-        setPopoverState({ open: false, event: null, postId: null });
-      }}
-    >
-      Delete
-    </IonButton>
-  </IonContent>
-</IonPopover>
+                    isOpen={popoverState.open && popoverState.postId === post.post_id}
+                    event={popoverState.event}
+                    onDidDismiss={() => setPopoverState({ open: false, event: null, postId: null })}
+                  >
+                    <IonButton fill="clear" onClick={() => { startEditingPost(post); setPopoverState({ open: false, event: null, postId: null }); }}>
+                      Edit
+                    </IonButton>
+                    <IonButton
+                      fill="clear"
+                      color="danger"
+                      onClick={() => {
+                        const imagePath = getImagePath(post.post_image_url ?? '');
+                        deletePost(post.post_id, imagePath);
+                        setPopoverState({ open: false, event: null, postId: null });
+                      }}>Delete
+                    </IonButton>
 
+                  </IonPopover>
                 </IonCard>
               ))}
             </>
