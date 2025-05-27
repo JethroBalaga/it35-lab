@@ -441,7 +441,12 @@ const FeedContainer = () => {
                       <img
                         src={post.post_image_url}
                         alt="Post"
-                        style={{ width: '10%', height: '5%', borderRadius: '10px', marginTop: '10px' }}
+                        style={{  width: '100%',
+      height: 'auto',
+      maxHeight: '500px',
+      objectFit: 'cover',
+      borderRadius: '8px',
+      marginTop: '10px' }}
                       />
                     )}
                   </IonCardContent>
