@@ -40,27 +40,7 @@ const FeedContainer = () => {
   
   useEffect(() => {
     const style = document.createElement('style');
-    style.innerHTML = `
-      @keyframes borderBlink {
-        0%, 100% {
-          border-color: #2B99E2;
-          box-shadow: 0 0 15px #2B99E2, 0 0 15px #2BAEE2, 0 0 15px#2B99E2;
-        }
-        50% {
-          border-color: #2B99E2;
-          box-shadow: 0 0 5px #2B99E2, 0 0 5px #2B99E2, 0 0 5px #2B99E2;
-        }
-      }
-
-      @keyframes fadeIn {
-      0% {
-        opacity: 0; /* Start with the card being invisible */
-      }
-      100% {
-          opacity: 1; /* Fade in to fully visible */
-       }
-      }
-    `;
+   
     document.head.appendChild(style);
   }, []);
 
@@ -293,11 +273,11 @@ const FeedContainer = () => {
           {user ? (
             <>
               <IonCard style={{
-                background: 'transparent',
-                margin: '4%',
-                  border: '2px solid #2B99E2',
-                  boxShadow: '0 0 15px #2B99E2, 0 0 15px #2B99E2, 0 0 15px #2B99E2',
-                  animation: 'borderBlink 2s infinite, fadeIn 1.5s ease-in forwards'
+                 background: 'black',
+  margin: '4%',
+  border: '2px solid white',
+  boxShadow: 'none',
+  animation: 'borderBlink 2s infinite, fadeIn 1.5s ease-in forwards'
                 
               }}>
                 <IonCardHeader>
@@ -387,10 +367,12 @@ const FeedContainer = () => {
 
               {posts.map(post => (
                 <IonCard key={post.post_id} style={{
-                  background: 'transparent',
-                  border: '2px solid #2B99E2',
-                  boxShadow: '0 0 15px #2B99E2, 0 0 15px #2B99E2, 0 0 15px #2B99E2',
-                  animation: 'borderBlink 2s infinite, fadeIn 1.5s ease-in forwards',
+                  background: 'black',
+    margin: '4% auto',
+    maxWidth: '600px',
+    border: '2px solid white',
+    boxShadow: 'none',
+    animation: 'borderBlink 2s infinite, fadeIn 1.5s ease-in forwards'
                 }}>
                   <IonCardHeader>
                     <IonRow>
@@ -425,7 +407,12 @@ const FeedContainer = () => {
                       <img
                         src={post.post_image_url}
                         alt="Post"
-                        style={{ width: '10%', height: '5%', borderRadius: '10px', marginTop: '10px' }}
+                        style={{  width: '100%',
+      height: 'auto',
+      maxHeight: '500px',
+      objectFit: 'cover',
+      borderRadius: '8px',
+      marginTop: '10px' }}
                       />
                     )}
                   </IonCardContent>
