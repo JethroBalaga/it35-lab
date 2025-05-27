@@ -5,6 +5,7 @@ import { supabase } from '../utils/supabaseClient';
 import { pencil, camera, happyOutline } from 'ionicons/icons';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
+import background from '../images/fd.gif'
 
 
 interface Post {
@@ -270,6 +271,21 @@ const FeedContainer = () => {
           </IonToolbar>
         </IonHeader>
         <IonContent>
+
+ <img
+              src={background}
+              alt="background"
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover', 
+                zIndex: -1, 
+              }}
+            />
+
           {user ? (
             <>
               <IonCard style={{
