@@ -3,6 +3,7 @@ import { IonButton, IonIcon, useIonToast } from '@ionic/react';
 import { logoGoogle } from 'ionicons/icons';
 import { supabase } from '../utils/supabaseClient';
 import { useIonRouter } from '@ionic/react';
+import './GoogleLoginButton.css';
 
 const GoogleLoginButton = () => {
   const router = useIonRouter();
@@ -10,26 +11,23 @@ const GoogleLoginButton = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: window.location.origin + '/it35-lab/app'
         }
       });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
-      // Show success feedback
       await presentToast({
-        message: 'Google login successful!',
+        message: 'Redirecting to Google...',
         duration: 2000,
         position: 'top',
         color: 'success'
       });
 
-      // Redirect after successful login
+      // NOTE: Supabase redirects, so the route push may not be reached.
       router.push('/it35-lab/app', 'forward', 'replace');
 
     } catch (error: any) {
