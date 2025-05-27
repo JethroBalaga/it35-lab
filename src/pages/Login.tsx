@@ -18,6 +18,8 @@ import { supabase } from '../utils/supabaseClient';
 import logos from '../images/skull-3471134_1280.webp';
 import background from '../images/vcs.gif';
 import ReCAPTCHA from 'react-google-recaptcha';
+import GoogleLoginButton from '../components/GoogleLoginButton';
+
 
 const Login: React.FC = () => {
   const navigation = useIonRouter();
@@ -31,6 +33,7 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [otpEmailSent, setOtpEmailSent] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+
 
   const doLogin = async () => {
     if (!captchaToken) {
@@ -196,18 +199,22 @@ const Login: React.FC = () => {
 
           {/* CAPTCHA */}
           <div style={{
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  margin: '1rem 0'
-}}>
-          <ReCAPTCHA
-            sitekey="6Lft2korAAAAADcz_DZh9YkwJMJsYvxvViKbX4ma"
-            onChange={token => setCaptchaToken(token)}
-            className="ion-margin-bottom"
-          />
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: '1rem 0'
+          }}>
+            <ReCAPTCHA
+              sitekey="6Lft2korAAAAADcz_DZh9YkwJMJsYvxvViKbX4ma"
+              onChange={token => setCaptchaToken(token)}
+              className="ion-margin-bottom"
+            />
           </div>
 
+       
+<GoogleLoginButton/>
+
+       
           <IonButton
             onClick={doLogin}
             expand="block"
