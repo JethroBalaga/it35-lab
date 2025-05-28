@@ -20,7 +20,6 @@ import background from '../images/vcs.gif';
 import ReCAPTCHA from 'react-google-recaptcha';
 import GoogleLoginButton from '../components/GoogleLoginButton';
 
-
 const Login: React.FC = () => {
   const navigation = useIonRouter();
   const [email, setEmail] = useState('');
@@ -34,67 +33,103 @@ const Login: React.FC = () => {
   const [otpEmailSent, setOtpEmailSent] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
+const doLogin = async () => {
+  if (!captchaToken) {
+    setAlertMessage("Please complete the CAPTCHA.");
+    setShowAlert(true);
+    return;
+  }
 
-  const doLogin = async () => {
-    if (!captchaToken) {
-      setAlertMessage("Please complete the CAPTCHA.");
-      setShowAlert(true);
+  setIsLoading(true);
+
+  try {
+    // 1. Attempt authentication FIRST
+    const { error, data: { user: authUser } } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    if (!authUser) throw new Error("Authentication failed");
+
+    // 2. Create successful login attempt record
+    const { error: attemptError } = await supabase
+      .from('login_attempts')
+      .insert({
+        user_id: authUser.id,
+        email: email,
+        success: true,
+        // created_at is automatically set by DEFAULT NOW()
+      });
+
+    if (attemptError) throw attemptError;
+
+    // 3. Proceed with post-login flow
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) throw userError || new Error("User data unavailable");
+
+    // Check admin status
+    const { data: userData } = await supabase
+      .from('users')
+      .select('is_admin')
+      .eq('user_email', user.email)
+      .single();
+
+    if (userData?.is_admin) {
+      navigation.push('/it35-lab/adminroute', 'forward', 'replace');
       return;
     }
 
-    setIsLoading(true);
-    try {
-      const { error, data: { user: authUser } } = await supabase.auth.signInWithPassword({ email, password });
+    // OTP handling
+    const userEmail = user.email || email;
+    const { data: otpSettings, error: otpError } = await supabase
+      .from('user_otp_settings')
+      .select('otp_status')
+      .eq('user_id', user.id)
+      .single();
 
-      if (error) throw error;
-      if (!authUser) throw new Error("User not found");
-
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) throw userError || new Error("User data unavailable");
-
-      const userEmail = user.email || email;
-
-      const { data: otpSettings, error: otpError } = await supabase
-        .from('user_otp_settings')
-        .select('otp_status')
-        .eq('id', user.id)
-        .single();
-
-      if (otpError || !otpSettings) {
-        setShowToast(true);
-        navigation.push('/it35-lab/app', 'forward', 'replace');
-        return;
-      }
-
-      if (otpSettings.otp_status) {
-        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
-
-        const { error: otpUpdateError } = await supabase
-          .from('user_otp_settings')
-          .upsert({
-            id: user.id,
-            email: userEmail,
-            otp_code: generatedOtp,
-            otp_expires_at: expiresAt,
-            updated_at: new Date().toISOString()
-          });
-
-        if (otpUpdateError) throw otpUpdateError;
-
-        setOtpEmailSent(userEmail);
-        setOtpModalOpen(true);
-      } else {
-        setShowToast(true);
-        navigation.push('/it35-lab/app', 'forward', 'replace');
-      }
-    } catch (error: any) {
-      setAlertMessage(error.message || "Login failed");
-      setShowAlert(true);
-    } finally {
-      setIsLoading(false);
+    if (otpError || !otpSettings) {
+      setShowToast(true);
+      navigation.push('/it35-lab/app', 'forward', 'replace');
+      return;
     }
-  };
+
+    if (otpSettings.otp_status) {
+      const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+
+      const { error: otpUpdateError } = await supabase
+        .from('user_otp_settings')
+        .upsert({
+          user_id: user.id,
+          email: userEmail,
+          otp_code: generatedOtp,
+          otp_expires_at: expiresAt
+        });
+
+      if (otpUpdateError) throw otpUpdateError;
+
+      setOtpEmailSent(userEmail);
+      setOtpModalOpen(true);
+    } else {
+      setShowToast(true);
+      navigation.push('/it35-lab/app', 'forward', 'replace');
+    }
+
+  } catch (error: any) {
+    console.error("Login failed:", error);
+    setAlertMessage(error.message || "Login failed");
+    setShowAlert(true);
+
+    // Create failed attempt record
+    await supabase
+      .from('login_attempts')
+      .insert({
+        email: email,
+        success: false,
+        error_message: error.message
+        // created_at is automatically set
+      });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const verifyOtp = async () => {
     setIsLoading(true);
@@ -105,7 +140,7 @@ const Login: React.FC = () => {
       const { data: otpData, error: otpError } = await supabase
         .from('user_otp_settings')
         .select('otp_code, otp_expires_at')
-        .eq('id', user.id)
+        .eq('user_id', user.id)
         .single();
 
       if (otpError || !otpData?.otp_code) throw new Error("Invalid OTP");
@@ -115,7 +150,7 @@ const Login: React.FC = () => {
       await supabase
         .from('user_otp_settings')
         .update({ otp_code: null, otp_expires_at: null })
-        .eq('id', user.id);
+        .eq('user.id', user.id);
 
       setShowToast(true);
       setOtpModalOpen(false);
@@ -131,7 +166,6 @@ const Login: React.FC = () => {
   return (
     <IonPage>
       <IonContent className='ion-padding'>
-
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -155,7 +189,6 @@ const Login: React.FC = () => {
         />
 
         <div className="ion-text-center ion-margin-top">
-
           <img
             src={logos}
             alt="Logo"
@@ -211,10 +244,8 @@ const Login: React.FC = () => {
             />
           </div>
 
-       
-<GoogleLoginButton/>
+          <GoogleLoginButton/>
 
-       
           <IonButton
             onClick={doLogin}
             expand="block"
@@ -239,23 +270,20 @@ const Login: React.FC = () => {
           <IonContent className="ion-padding">
             <div className="ion-text-center">
               <h2>OTP Verification</h2>
-
-              <IonButton
-                routerLink="/otp"
-                onClick={() => setOtpModalOpen(false)}
-                expand="block"
-                className="ion-margin-bottom"
-              >
-                Go to OTP Page
-              </IonButton>
+              <p>We've sent a 6-digit code to {otpEmailSent}</p>
 
               <IonInput
                 value={otpCode}
                 placeholder="Enter 6-digit OTP"
                 onIonChange={e => setOtpCode(e.detail.value!)}
+                className="ion-margin-bottom"
               />
 
-              <IonButton onClick={verifyOtp} expand="block">
+              <IonButton 
+                onClick={verifyOtp} 
+                expand="block"
+                className="ion-margin-bottom"
+              >
                 Verify OTP
               </IonButton>
 

@@ -38,6 +38,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Menu from './pages/Menu';
 import OtpPage from './pages/OtpPage';
+import AdminRoute from './components/AdminRoute';
+
+
 setupIonicReact();
 
 const App: React.FC = () => (
@@ -46,9 +49,10 @@ const App: React.FC = () => (
       <IonRouterOutlet>
 
         <Route exact path="/it35-lab" component={Login} />
-        <Route exact path="/register" component={Register} /> 
+        <Route exact path="/register" component={Register} />
         <Route exact path="/otp" component={OtpPage} />
         <Route path="/it35-lab/app" component={Menu} />
+        <Route path="/it35-lab/adminroute" component={AdminRoute} />
 
       </IonRouterOutlet>
     </IonReactRouter>
