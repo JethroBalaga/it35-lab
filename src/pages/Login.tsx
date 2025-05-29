@@ -19,6 +19,7 @@ import logos from '../images/skull-3471134_1280.webp';
 import background from '../images/vcs.gif';
 import ReCAPTCHA from 'react-google-recaptcha';
 import GoogleLoginButton from '../components/GoogleLoginButton';
+import OtpPage from './OtpPage';
 
 const Login: React.FC = () => {
   const navigation = useIonRouter();
@@ -33,103 +34,103 @@ const Login: React.FC = () => {
   const [otpEmailSent, setOtpEmailSent] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
-const doLogin = async () => {
-  if (!captchaToken) {
-    setAlertMessage("Please complete the CAPTCHA.");
-    setShowAlert(true);
-    return;
-  }
-
-  setIsLoading(true);
-
-  try {
-    // 1. Attempt authentication FIRST
-    const { error, data: { user: authUser } } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    if (!authUser) throw new Error("Authentication failed");
-
-    // 2. Create successful login attempt record
-    const { error: attemptError } = await supabase
-      .from('login_attempts')
-      .insert({
-        user_id: authUser.id,
-        email: email,
-        success: true,
-        // created_at is automatically set by DEFAULT NOW()
-      });
-
-    if (attemptError) throw attemptError;
-
-    // 3. Proceed with post-login flow
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) throw userError || new Error("User data unavailable");
-
-    // Check admin status
-    const { data: userData } = await supabase
-      .from('users')
-      .select('is_admin')
-      .eq('user_email', user.email)
-      .single();
-
-    if (userData?.is_admin) {
-      navigation.push('/it35-lab/adminroute', 'forward', 'replace');
+  const doLogin = async () => {
+    if (!captchaToken) {
+      setAlertMessage("Please complete the CAPTCHA.");
+      setShowAlert(true);
       return;
     }
 
-    // OTP handling
-    const userEmail = user.email || email;
-    const { data: otpSettings, error: otpError } = await supabase
-      .from('user_otp_settings')
-      .select('otp_status')
-      .eq('user_id', user.id)
-      .single();
+    setIsLoading(true);
 
-    if (otpError || !otpSettings) {
-      setShowToast(true);
-      navigation.push('/it35-lab/app', 'forward', 'replace');
-      return;
-    }
+    try {
+      // 1. Attempt authentication FIRST
+      const { error, data: { user: authUser } } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      if (!authUser) throw new Error("Authentication failed");
 
-    if (otpSettings.otp_status) {
-      const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-      const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
-
-      const { error: otpUpdateError } = await supabase
-        .from('user_otp_settings')
-        .upsert({
-          user_id: user.id,
-          email: userEmail,
-          otp_code: generatedOtp,
-          otp_expires_at: expiresAt
+      // 2. Create successful login attempt record
+      const { error: attemptError } = await supabase
+        .from('login_attempts')
+        .insert({
+          user_id: authUser.id,
+          email: email,
+          success: true,
+          // created_at is automatically set by DEFAULT NOW()
         });
 
-      if (otpUpdateError) throw otpUpdateError;
+      if (attemptError) throw attemptError;
 
-      setOtpEmailSent(userEmail);
-      setOtpModalOpen(true);
-    } else {
-      setShowToast(true);
-      navigation.push('/it35-lab/app', 'forward', 'replace');
+      // 3. Proceed with post-login flow
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw userError || new Error("User data unavailable");
+
+      // Check admin status
+      const { data: userData } = await supabase
+        .from('users')
+        .select('is_admin')
+        .eq('user_email', user.email)
+        .single();
+
+      if (userData?.is_admin) {
+        navigation.push('/it35-lab/adminroute', 'forward', 'replace');
+        return;
+      }
+
+      // OTP handling
+      const userEmail = user.email || email;
+      const { data: otpSettings, error: otpError } = await supabase
+        .from('user_otp_settings')
+        .select('otp_status')
+        .eq('id', user.id)
+        .single();
+
+      if (otpError || !otpSettings) {
+        setShowToast(true);
+        navigation.push('/it35-lab/app', 'forward', 'replace');
+        return;
+      }
+
+      if (otpSettings.otp_status) {
+        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+
+        const { error: otpUpdateError } = await supabase
+          .from('user_otp_settings')
+          .upsert({
+            id: user.id,
+            email: userEmail,
+            otp_code: generatedOtp,
+            otp_expires_at: expiresAt
+          });
+
+        if (otpUpdateError) throw otpUpdateError;
+
+        setOtpEmailSent(userEmail);
+        setOtpModalOpen(true);
+      } else {
+        setShowToast(true);
+        navigation.push('/it35-lab/app', 'forward', 'replace');
+      }
+
+    } catch (error: any) {
+      console.error("Login failed:", error);
+      setAlertMessage(error.message || "Login failed");
+      setShowAlert(true);
+
+      // Create failed attempt record
+      await supabase
+        .from('login_attempts')
+        .insert({
+          email: email,
+          success: false,
+          error_message: error.message
+          // created_at is automatically set
+        });
+    } finally {
+      setIsLoading(false);
     }
-
-  } catch (error: any) {
-    console.error("Login failed:", error);
-    setAlertMessage(error.message || "Login failed");
-    setShowAlert(true);
-
-    // Create failed attempt record
-    await supabase
-      .from('login_attempts')
-      .insert({
-        email: email,
-        success: false,
-        error_message: error.message
-        // created_at is automatically set
-      });
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const verifyOtp = async () => {
     setIsLoading(true);
@@ -140,7 +141,7 @@ const doLogin = async () => {
       const { data: otpData, error: otpError } = await supabase
         .from('user_otp_settings')
         .select('otp_code, otp_expires_at')
-        .eq('user_id', user.id)
+        .eq('id', user.id)
         .single();
 
       if (otpError || !otpData?.otp_code) throw new Error("Invalid OTP");
@@ -244,7 +245,7 @@ const doLogin = async () => {
             />
           </div>
 
-          <GoogleLoginButton/>
+          <GoogleLoginButton />
 
           <IonButton
             onClick={doLogin}
@@ -266,11 +267,16 @@ const doLogin = async () => {
         </div>
 
         {/* OTP Modal */}
+
         <IonModal isOpen={otpModalOpen} onDidDismiss={() => setOtpModalOpen(false)}>
           <IonContent className="ion-padding">
             <div className="ion-text-center">
               <h2>OTP Verification</h2>
               <p>We've sent a 6-digit code to {otpEmailSent}</p>
+
+              <IonButton routerLink="/otp" routerDirection="back" color="primary">
+                Go to OTP page
+              </IonButton>
 
               <IonInput
                 value={otpCode}
@@ -279,8 +285,8 @@ const doLogin = async () => {
                 className="ion-margin-bottom"
               />
 
-              <IonButton 
-                onClick={verifyOtp} 
+              <IonButton
+                onClick={verifyOtp}
                 expand="block"
                 className="ion-margin-bottom"
               >
@@ -295,9 +301,9 @@ const doLogin = async () => {
                 Cancel
               </IonButton>
             </div>
+          
           </IonContent>
         </IonModal>
-
         <IonAlert
           isOpen={showAlert}
           onDidDismiss={() => setShowAlert(false)}
@@ -317,6 +323,7 @@ const doLogin = async () => {
         <IonLoading isOpen={isLoading} message="Processing..." />
       </IonContent>
     </IonPage>
+
   );
 };
 
