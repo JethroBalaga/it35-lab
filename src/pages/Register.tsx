@@ -128,10 +128,10 @@ const Register: React.FC = () => {
                     <IonInputPasswordToggle slot="end" />
                 </IonInput>
 
-                <IonButton onClick={handleOpenVerificationModal} expand="full" shape='round' style={{ marginTop: '15px' }}>
+                <IonButton onClick={handleOpenVerificationModal} expand="full" shape='round' color={"tertiary"} style={{ marginTop: '15px' }}>
                     Register
                 </IonButton>
-                <IonButton routerLink="/it35-lab" expand="full" fill="clear" shape='round'>
+                <IonButton routerLink="/it35-lab" expand="full" fill="clear" shape='round' color={"tertiary"}>
                     Already have an account? Sign in
                 </IonButton>
 

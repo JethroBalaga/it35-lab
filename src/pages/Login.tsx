@@ -215,6 +215,7 @@ const Login: React.FC = () => {
             value={email}
             onIonChange={e => setEmail(e.detail.value!)}
             className="ion-margin-bottom"
+            color={"tertiary"}
           />
 
           <IonInput
@@ -227,6 +228,7 @@ const Login: React.FC = () => {
             value={password}
             onIonChange={e => setPassword(e.detail.value!)}
             className="ion-margin-bottom"
+            color={"tertiary"}
           >
             <IonInputPasswordToggle slot="end" />
           </IonInput>
@@ -237,6 +239,7 @@ const Login: React.FC = () => {
             justifyContent: 'center',
             alignItems: 'center',
             margin: '1rem 0'
+            
           }}>
             <ReCAPTCHA
               sitekey="6Lft2korAAAAADcz_DZh9YkwJMJsYvxvViKbX4ma"
@@ -252,6 +255,7 @@ const Login: React.FC = () => {
             expand="block"
             shape="round"
             className="ion-margin-bottom"
+            color={"tertiary"}
           >
             Login
           </IonButton>
@@ -261,6 +265,7 @@ const Login: React.FC = () => {
             expand="block"
             fill="clear"
             shape="round"
+            color={"tertiary"}
           >
             Don't have an account? Register here
           </IonButton>

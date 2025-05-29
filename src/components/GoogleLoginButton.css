@@ -1,6 +1,6 @@
 .google-login-button {
-  --border-color: #4285F4;
-  --color: #4285F4;
+  --border-color: #f2f7f7;
+  --color: #f8f8f8;
   font-weight: 600;
   font-size: 16px;
   letter-spacing: 0.05em;
@@ -17,12 +17,37 @@
 }
 
 .google-login-button:hover {
-  background-color: #4285F4;
+  background: linear-gradient(
+    135deg,
+    #4285F4 0%,    /* Google Blue */
+    #34A853 25%,   /* Google Green */
+    #FBBC05 50%,   /* Google Yellow */
+    #EA4335 75%    /* Google Red */
+  );
+  background-size: 300% 300%;
   color: white;
-  border-color: #357ae8;
+  border-color: transparent;
   box-shadow:
-    0 0 8px 2px rgba(66, 133, 244, 0.6),
-    0 0 20px 6px rgba(66, 133, 244, 0.3);
+    0 0 8px 2px rgba(250, 250, 250, 0.6),
+    0 0 20px 6px rgba(240, 240, 240, 0.3);
+  animation: gradientBG 1.5s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.google-login-button:hover .google-icon {
+  color: white;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
 }
 
 .google-login-button:focus-visible {
