@@ -19,6 +19,28 @@ import Home from './Home';
 import About from './About';
 import Details from './Details';
 import EditProfile from './EditProfile';
+
+
+const glow = {
+  animation: 'blink 2s infinite',
+  filter: 'drop-shadow(0 0 8px white)',
+};
+
+const h1Style = {
+  ...glow,
+  animationDelay: '0.1s',
+  color: 'red',
+};
+const h2Style = {
+  display: 'flex',
+  color: 'red',
+  margin: '3%'
+};
+
+
+
+
+
   const Menu: React.FC = () => {
     const path = [
         {name:'Home', url: '/it35-lab/app/home', icon: homeOutline},
@@ -32,20 +54,20 @@ import EditProfile from './EditProfile';
       <IonMenu contentId="main-content">
         <IonHeader>
           <IonToolbar>
-            <IonTitle>Menu Content</IonTitle>
+            <IonTitle color='danger'>Menu Content</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
         {path.map((item,index) =>(
                             <IonMenuToggle key={index}>
-                                <IonItem routerLink={item.url} routerDirection="forward">
-                                    <IonIcon icon={item.icon} slot="start"></IonIcon>
+                                <IonItem routerLink={item.url} routerDirection="forward"style={h2Style}>
+                                    <IonIcon icon={item.icon} slot="start" style={h1Style}></IonIcon>
                                     {item.name}
                                 </IonItem>
                             </IonMenuToggle>
                         ))}
-        <IonButton routerLink="/it35-lab" routerDirection="back" expand="full">
-                            <IonIcon icon={logOutOutline} slot="start"> </IonIcon>
+        <IonButton routerLink="/it35-lab" routerDirection="back" expand="full" color='danger'>
+                            <IonIcon icon={logOutOutline} slot="start" color='Light'> </IonIcon>
                         Logout
                         </IonButton>
         </IonContent>
@@ -54,9 +76,9 @@ import EditProfile from './EditProfile';
         <IonHeader>
           <IonToolbar>
             <IonButtons slot="start">
-              <IonMenuButton></IonMenuButton>
+              <IonMenuButton color='danger'></IonMenuButton>
             </IonButtons>
-            <IonTitle>Menu</IonTitle>
+            <IonTitle color='danger'>Menu</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">

@@ -13,9 +13,8 @@ import {
         <IonHeader>
           <IonToolbar>
             <IonButtons slot='start'>
-              <IonMenuButton></IonMenuButton>
             </IonButtons>
-            <IonTitle>Favorites</IonTitle>
+            <IonTitle color='danger'>Favorites</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent fullscreen>
@@ -27,7 +26,7 @@ import {
             height: '100%',
           }}
         >
-          Favorites
+          Favortites
         </div>
         </IonContent>
       </IonPage>
